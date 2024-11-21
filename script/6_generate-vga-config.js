@@ -4,6 +4,9 @@ import INTERESTED_CONFERENCES from "../config/conferences.json" with {
     type: "json",
 };
 import CONFERENCE_COLORS from "../config/colors.json" with { type: "json" };
+import INTERESTED_YEAR_RANGE from "../config/year-range.json" with {
+    type: "json",
+};
 
 const OUTPUT_PATH = path.join(
     import.meta.dirname,
@@ -26,6 +29,7 @@ const config = {
         "metadata": "./plugin/metadata.plugin.js",
         "tile-layer": "./plugin/tile-layer.plugin.js",
         "gl-layer": "./plugin/gl-layer.plugin.js",
+        "heatmap": "./plugin/heatmap.plugin.js",
     },
     plugins: [
         {
@@ -46,6 +50,17 @@ const config = {
                 tileMetadata: "./tiles/metadata.json",
                 conferences: INTERESTED_CONFERENCES,
                 conferenceColors: CONFERENCE_COLORS,
+            },
+        },
+        {
+            import: "heatmap",
+            container: "sidebar",
+            props: {
+                conferences: INTERESTED_CONFERENCES,
+                years: Array.from({
+                    length: INTERESTED_YEAR_RANGE[1] -
+                        INTERESTED_YEAR_RANGE[0] + 1,
+                }, (_, i) => INTERESTED_YEAR_RANGE[0] + i),
             },
         },
     ],

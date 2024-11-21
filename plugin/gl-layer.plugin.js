@@ -78,9 +78,6 @@ export default class PluginGLLayer extends HTMLElement {
       this.conferences?.forEach((_, i) => {
         map.on("click", `points_${i}`, async (e) => {
           const feature = e.features?.[0];
-          const timeSeries = await fetch(
-            `${this.configBaseUrl}time-series/${feature.properties.id}.csv`,
-          ).then((response) => response.text());
           const metadata = { ...feature.properties };
           if (metadata.name) {
             metadata.name =

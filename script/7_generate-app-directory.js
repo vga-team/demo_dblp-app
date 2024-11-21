@@ -35,7 +35,4 @@ await fs.cp(
 await fs.cp(
     path.join(import.meta.dirname, "../data/app.vgaconf.json"),
     path.join(OUTPUT_DIR_PATH, "./app.vgaconf.json"),
-    {
-        recursive: true,
-    },
 );
