@@ -1,17 +1,17 @@
 import * as fs from "fs";
+import path from "node:path";
 import Database from "better-sqlite3";
-import captureEntities from "./capture-entities.js";
+import captureEntities from "../helper/capture-entities";
+import INTERESTED_CONFERENCES from "../config/conferences.json" with {
+  type: "json",
+};
+import PUBLICATION_TYPES from "../config/publication-types.json" with {
+  type: "json",
+};
 
-const inputXmlPath = "./dblp.xml";
-const outputDbPAth = "./dblp.sqlite3";
+const inputXmlPath = path.join(import.meta.dirname, "../data/dblp.xml");
+const outputDbPAth = path.join(import.meta.dirname, "../data/dblp.sqlite3");
 
-const PUBLICATION_TYPES = ["inproceedings", "proceedings"];
-const INTERESTED_CONFERENCES = [
-  "Graph Drawing",
-  "IEEE VIS",
-  "PacificVis",
-  "EuroVis",
-];
 const booktitleMatch = new RegExp(INTERESTED_CONFERENCES.join("|"));
 
 const readStream = fs.createReadStream(inputXmlPath);
@@ -20,7 +20,7 @@ try {
   fs.unlinkSync(outputDbPAth);
 } catch {}
 const db = new Database(
-  outputDbPAth
+  outputDbPAth,
   // { verbose: console.log }
 );
 
@@ -60,7 +60,7 @@ try {
       rel TEXT,
       UNIQUE(dblp_key)
     )
-    `
+    `,
   ).run();
   db.prepare(
     /* sql */ `
@@ -70,7 +70,7 @@ try {
       orcid TEXT,
       UNIQUE(name, orcid)
     )
-  `
+  `,
   ).run();
   db.prepare(
     /* sql */ `
@@ -83,18 +83,20 @@ try {
       FOREIGN KEY (person_id) REFERENCES person(id),
       UNIQUE(publication_id, person_id, role)
     )
-    `
+    `,
   ).run();
 
-  for await (const publicationNode of captureEntities(
-    readStream,
-    PUBLICATION_TYPES
-  )) {
+  for await (
+    const publicationNode of captureEntities(
+      readStream,
+      PUBLICATION_TYPES,
+    )
+  ) {
     if (publicationNode == null) {
       continue;
     }
     const bookTitle = publicationNode.children?.find(
-      (childNode) => childNode.name === "booktitle"
+      (childNode) => childNode.name === "booktitle",
     )?.text;
     if (bookTitle?.match(booktitleMatch)) {
       const publication = {
@@ -109,13 +111,13 @@ try {
           case "editor": {
             let personId = db
               .prepare(
-                /* sql */ `SELECT id FROM person WHERE orcid = ? OR name = ?`
+                /* sql */ `SELECT id FROM person WHERE orcid = ? OR name = ?`,
               )
               .get(attributes?.orcid, text)?.id;
             if (!personId) {
               personId = db
                 .prepare(
-                  /* sql */ `INSERT INTO person (name, orcid) VALUES (?, ?)`
+                  /* sql */ `INSERT INTO person (name, orcid) VALUES (?, ?)`,
                 )
                 .run(text, attributes?.orcid ?? "").lastInsertRowid;
             }
@@ -137,15 +139,17 @@ try {
       const placeholders = values.map(() => "?").join(", ");
       const publicationId = db
         .prepare(
-          /* sql */ `INSERT INTO publication (${keys.join(
-            ", "
-          )}) VALUES (${placeholders})`
+          /* sql */ `INSERT INTO publication (${
+            keys.join(
+              ", ",
+            )
+          }) VALUES (${placeholders})`,
         )
         .run(...values).lastInsertRowid;
       for (const contributor of contributors) {
         try {
           db.prepare(
-            /* sql */ `INSERT INTO publication_person (publication_id, person_id, role) VALUES (?, ?, ?)`
+            /* sql */ `INSERT INTO publication_person (publication_id, person_id, role) VALUES (?, ?, ?)`,
           ).run(publicationId, contributor.id, contributor.role);
         } catch (e) {
           console.error(e, publicationNode, {
