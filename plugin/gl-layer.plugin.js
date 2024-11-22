@@ -128,9 +128,9 @@ export default class PluginGLLayer extends HTMLElement {
       layers: [
         this.#generateStyleForEdges(),
         ...this.#generateStyleForPersonNodes(),
-        ...this.#generateStyleForConferenceNodes(),
+        // ...this.#generateStyleForConferenceNodes(),
         this.#generateStyleForPersonLabels(),
-        this.#generateStyleForConferenceLabels(),
+        // this.#generateStyleForConferenceLabels(),
       ],
     };
   }
@@ -351,6 +351,8 @@ export default class PluginGLLayer extends HTMLElement {
     const css = /* css */ `
       :host {
         display: block;
+        overflow-y: auto;
+        max-height: 15rem;
         overflow-y: auto;
       }
       * {

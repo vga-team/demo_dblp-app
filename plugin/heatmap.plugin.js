@@ -20,6 +20,8 @@ export default class PluginTileLayer extends HTMLElement {
     displayName = "Heatmap";
     conferences = [];
     years = [];
+    minValue;
+    maxValue;
     //#endregion
 
     constructor() {
@@ -40,7 +42,7 @@ export default class PluginTileLayer extends HTMLElement {
             return;
         }
 
-        const margin = { top: 30, right: 30, bottom: 30, left: 30 },
+        const margin = { top: 30, right: 30, bottom: 30, left: 60 },
             width = 500,
             height = 500;
 
@@ -86,8 +88,11 @@ export default class PluginTileLayer extends HTMLElement {
         const values = data.map((d) => d.value);
 
         const myColor = d3.scaleLinear()
-            .range(["white", "red"])
-            .domain([d3.min(values), d3.max(values)]);
+            .range(["#eeeeee", "#ff0000"])
+            .domain([
+                this.minValue ?? d3.min(values),
+                this.maxValue ?? d3.max(values),
+            ]);
 
         svg.selectAll()
             .data(data)
@@ -105,6 +110,20 @@ export default class PluginTileLayer extends HTMLElement {
             })
             .append("title")
             .text((d) => `${d.conference}:${d.year}:${d.value}`);
+
+        svg.selectAll()
+            .data(data)
+            .join("text")
+            .filter((d) => d.value > 0)
+            .attr("x", function (d) {
+                return x(d.year);
+            })
+            .attr("y", function (d) {
+                return y(d.conference);
+            })
+            .attr("dx", width / this.years.length / 2 - 12 / 2)
+            .attr("dy", height / this.conferences.length / 2 + 12 / 2)
+            .text((d) => d.value);
     }
 
     get #styleSheet() {

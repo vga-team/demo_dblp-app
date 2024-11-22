@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import Database from "better-sqlite3";
-import { csvFormatBody } from "d3";
+import { csvFormatBody, max } from "d3";
 import INTERESTED_CONFERENCES from "../config/conferences.json" with {
     type: "json",
 };
@@ -71,6 +71,14 @@ const queryResult = db.prepare(
         year
     `,
 ).all();
+
+const allValues = queryResult.map((d) => d.count);
+const metadata = { min: 0, max: max(allValues) };
+await fs.writeFile(
+    path.join(OUTPUT_DIR_PATH, `metadata.json`),
+    JSON.stringify(metadata),
+);
+
 const groupedByPerson = Object.groupBy(queryResult, ({ person }) => person);
 
 NODES_AND_EDGES.nodes.forEach(async (node) => {

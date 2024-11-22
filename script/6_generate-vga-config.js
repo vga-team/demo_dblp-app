@@ -7,6 +7,9 @@ import CONFERENCE_COLORS from "../config/colors.json" with { type: "json" };
 import INTERESTED_YEAR_RANGE from "../config/year-range.json" with {
     type: "json",
 };
+import TIME_SERIES_MATADATA from "../data/time-series/metadata.json" with {
+    type: "json",
+};
 
 const OUTPUT_PATH = path.join(
     import.meta.dirname,
@@ -61,6 +64,8 @@ const config = {
                     length: INTERESTED_YEAR_RANGE[1] -
                         INTERESTED_YEAR_RANGE[0] + 1,
                 }, (_, i) => INTERESTED_YEAR_RANGE[0] + i),
+                minValue: TIME_SERIES_MATADATA.min,
+                maxValue: TIME_SERIES_MATADATA.max,
             },
         },
     ],
