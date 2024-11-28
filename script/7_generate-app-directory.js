@@ -36,3 +36,7 @@ await fs.cp(
     path.join(import.meta.dirname, "../data/app.vgaconf.json"),
     path.join(OUTPUT_DIR_PATH, "./app.vgaconf.json"),
 );
+await fs.cp(
+    path.join(import.meta.dirname, "../data/nodes.geojson"),
+    path.join(OUTPUT_DIR_PATH, "./nodes.geojson"),
+);

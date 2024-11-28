@@ -33,6 +33,7 @@ const config = {
         "tile-layer": "./plugin/tile-layer.plugin.js",
         "gl-layer": "./plugin/gl-layer.plugin.js",
         "heatmap": "./plugin/heatmap.plugin.js",
+        "search": "./plugin/search.plugin.js",
     },
     plugins: [
         {
@@ -40,6 +41,14 @@ const config = {
             container: "sidebar",
             containerProps: {
                 slot: "top",
+            },
+        },
+        {
+            import: "search",
+            container: "sidebar",
+            props: {
+                nodesGeoJSONUrl: "./nodes.geojson",
+                detailZoomLevel: 12,
             },
         },
         {

@@ -39,15 +39,21 @@ export default class PluginGLLayer extends HTMLElement {
 
   renderUI() {
     if (!this.shadowRoot) return;
-    const map = this.#layerInstance?.getMaplibreMap();
+    const conferenceItems = this.conferences?.map((conference, i) =>
+      /* html */ `<label style="display: block; padding: 0.25em; margin: 0.25em; border: 2px solid ${
+        this.conferenceColors[i]
+      }"><input type="checkbox" ${
+        this.#conferenceSelections[i] ? `checked` : ""
+      } data-conference-index="${i}"/>${conference}</label>`
+    );
+
     this.shadowRoot.innerHTML = /* html */ `
       <div id="main-view">
         ${
-      this.conferences?.map((conference, i) =>
-        /* html */ `<label style="display: block; padding: 0.25em; margin: 0.25em; border: 2px solid ${
-          this.conferenceColors[i]
-        }"><input type="checkbox" checked data-conference-index="${i}"/>${conference}</label>`
-      ).join("")
+      conferenceItems.filter((_, i) => this.#conferenceSelections[i]).join("")
+    }
+        ${
+      conferenceItems.filter((_, i) => !this.#conferenceSelections[i]).join("")
     }
       </div>
     `;
@@ -57,6 +63,7 @@ export default class PluginGLLayer extends HTMLElement {
         this.#conferenceSelections[conferenceIndex] = currentTarget.checked;
         this.#layerInstance
           .getMaplibreMap().setStyle(await this.#generateMapStyle());
+        this.renderUI();
       })
     );
   }

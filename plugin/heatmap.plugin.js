@@ -1,6 +1,6 @@
 import * as d3 from "https://esm.run/d3@7";
 
-export default class PluginTileLayer extends HTMLElement {
+export default class PluginHeatmap extends HTMLElement {
     //#region VGA host APIs
     set sharedStates(value) {
         this.metadata = value?.metadata;

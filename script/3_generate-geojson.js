@@ -6,7 +6,14 @@ import NODES_AND_EDGES from "../data/nodes-and-edges.json" with {
     type: "json",
 };
 
-const OUTPUT_PATH = path.join(import.meta.dirname, "../data/graph.geojson");
+const GEOJSON_OUTPUT_PATH = path.join(
+    import.meta.dirname,
+    "../data/graph.geojson",
+);
+const NODES_GEOJSON_OUTPUT_PATH = path.join(
+    import.meta.dirname,
+    "../data/nodes.geojson",
+);
 const PADDING_RATIO_X = 0.75;
 const PADDING_RATIO_Y = 0.75;
 
@@ -57,4 +64,13 @@ const geojsonObject = {
         };
     })),
 };
-await fs.writeFile(OUTPUT_PATH, JSON.stringify(geojsonObject));
+await fs.writeFile(GEOJSON_OUTPUT_PATH, JSON.stringify(geojsonObject));
+await fs.writeFile(
+    NODES_GEOJSON_OUTPUT_PATH,
+    JSON.stringify({
+        ...geojsonObject,
+        features: geojsonObject.features.filter(({ geometry: { type } }) =>
+            type === "Point"
+        ),
+    }),
+);
