@@ -25,8 +25,8 @@ const personNodes = NODES_AND_EDGES.nodes.map((node) => ({
     ...node,
     type: "person",
 }));
-const conferenceNodes = INTERESTED_CONFERENCES.map((conference) => ({
-    id: conference,
+const conferenceNodes = INTERESTED_CONFERENCES.map(([label]) => ({
+    id: label,
     type: "conference",
 }));
 const conferencePersonLinks = NODES_AND_EDGES.nodes.flatMap((node) =>
@@ -35,11 +35,6 @@ const conferencePersonLinks = NODES_AND_EDGES.nodes.flatMap((node) =>
         target: node.id,
     }))
 );
-// const conferenceConferenceLinks = INTERESTED_CONFERENCES.flatMap((source) =>
-//     INTERESTED_CONFERENCES.map((target) => ({ source, target })).filter((
-//         { source, target },
-//     ) => source !== target)
-// );
 let iterationCount = 0;
 const simulation = forceSimulation()
     .nodes(personNodes.concat(conferenceNodes))
@@ -47,14 +42,6 @@ const simulation = forceSimulation()
         "person-person",
         forceLink(NODES_AND_EDGES.edges.concat(conferencePersonLinks)).id((d) => d.id).strength(1),
     )
-    // .force(
-    //     "conference-person",
-    //     forceLink(conferencePersonLinks).id((d) => d.id).strength(5),
-    // )
-    // .force(
-    //     "conference-conference",
-    //     forceLink(conferenceConferenceLinks).id((d) => d.id).strength(-3),
-    // )
     .force("charge", forceManyBody())
     .force("collide", forceCollide())
     .force("x", forceX())

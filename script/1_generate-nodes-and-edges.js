@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
-import Database from "better-sqlite3";
+import { openDB } from "../helper/db.js";
 import INTERESTED_CONFERENCES from "../config/conferences.json" with {
     type: "json",
 };
@@ -11,7 +11,7 @@ import INTERESTED_YEAR_RANGE from "../config/year-range.json" with {
 const DB_PATH = path.join(import.meta.dirname, "../data/dblp.sqlite3");
 const OUTPUT_DIR_PATH = path.join(import.meta.dirname, "../data");
 
-const db = new Database(
+const db = openDB(
     DB_PATH,
     // { verbose: console.log }
 );
@@ -22,8 +22,8 @@ const _nodes = db.prepare(
         pp.person_id AS id,
         CASE
         ${
-        INTERESTED_CONFERENCES.map((conf) =>
-            /* sql */ `WHEN publication.booktitle LIKE '%${conf}%' THEN '${conf}'`
+        INTERESTED_CONFERENCES.map(([label, match]) =>
+            /* sql */ `WHEN publication.booktitle REGEXP '${match}' THEN '${label}'`
         ).join("\n")
     }
         END AS conference,
@@ -39,8 +39,8 @@ const _nodes = db.prepare(
         publication.id = pp.publication_id AND
         pp.person_id = person.id AND
         (${
-        INTERESTED_CONFERENCES.map((conf) =>
-            /* sql */ `publication.booktitle LIKE '%${conf}%'`
+        INTERESTED_CONFERENCES.map(([_, match]) =>
+            /* sql */ `publication.booktitle REGEXP '${match}'`
         ).join(" OR ")
     })
   `,
@@ -67,8 +67,8 @@ const _edges = db.prepare(
         pp2.person_id AS target,
         CASE
         ${
-        INTERESTED_CONFERENCES.map((conf) =>
-            /* sql */ `WHEN publication.booktitle LIKE '%${conf}%' THEN '${conf}'`
+        INTERESTED_CONFERENCES.map(([label, match]) =>
+            /* sql */ `WHEN publication.booktitle REGEXP '${match}' THEN '${label}'`
         ).join("\n")
     }
         END AS conference
@@ -83,8 +83,8 @@ const _edges = db.prepare(
         pp1.publication_id = pp2.publication_id AND
         pp1.person_id < pp2.person_id AND
         (${
-        INTERESTED_CONFERENCES.map((conf) =>
-            /* sql */ `publication.booktitle LIKE '%${conf}%'`
+        INTERESTED_CONFERENCES.map(([_, match]) =>
+            /* sql */ `publication.booktitle REGEXP '${match}'`
         ).join(" OR ")
     })
   `,

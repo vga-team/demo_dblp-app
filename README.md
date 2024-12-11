@@ -15,7 +15,8 @@ The [`./config/`](./config/) directory contains a set of configuration file that
 is used in the dashboard generation process.
 
 - To configure the list of interested conferences, check and modify to
-  [conferences.json](./config/conferences.json).
+  [conferences.json](./config/conferences.json). Note that each conference is
+  defined as a two-element array, containing a label and a regex match string.
 - To configure the list of interested plubilcation types, check and modify to
   [publication-types.json](./config/publication-types.json).
 - To configure the list of interested year range, check and modify to

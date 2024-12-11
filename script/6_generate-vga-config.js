@@ -60,7 +60,7 @@ const config = {
                 type: "base-layer",
                 tileSource: "./tiles/{z}/{x}/{y}.pbf",
                 tileMetadata: "./tiles/metadata.json",
-                conferences: INTERESTED_CONFERENCES,
+                conferences: INTERESTED_CONFERENCES.map(([label]) => label),
                 conferenceColors: CONFERENCE_COLORS,
             },
         },
@@ -68,7 +68,7 @@ const config = {
             import: "heatmap",
             container: "sidebar",
             props: {
-                conferences: INTERESTED_CONFERENCES,
+                conferences: INTERESTED_CONFERENCES.map(([label]) => label),
                 years: Array.from({
                     length: INTERESTED_YEAR_RANGE[1] -
                         INTERESTED_YEAR_RANGE[0] + 1,

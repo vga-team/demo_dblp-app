@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
-import Database from "better-sqlite3";
+import { openDB } from "../helper/db.js";
 import { csvFormatBody, max } from "d3";
 import INTERESTED_CONFERENCES from "../config/conferences.json" with {
     type: "json",
@@ -21,7 +21,7 @@ const DB_PATH = path.join(
     "../data/dblp.sqlite3",
 );
 
-const db = new Database(
+const db = openDB(
     DB_PATH,
     // { verbose: console.log }
 );
@@ -41,8 +41,8 @@ const queryResult = db.prepare(
         publication_person.person_id AS person,
         CASE
             ${
-        INTERESTED_CONFERENCES.map((conference) =>
-            /* sql */ `WHEN publication.booktitle LIKE '%${conference}%' THEN '${conference}'`
+        INTERESTED_CONFERENCES.map(([label, match]) =>
+            /* sql */ `WHEN publication.booktitle REGEXP '${match}' THEN '${label}'`
         ).join("\n")
     }
         END AS conference,
@@ -53,8 +53,8 @@ const queryResult = db.prepare(
         publication_person
     WHERE
         (${
-        INTERESTED_CONFERENCES.map((conference) =>
-            /* sql */ `publication.booktitle LIKE '%${conference}%'`
+        INTERESTED_CONFERENCES.map(([_, match]) =>
+            /* sql */ `publication.booktitle REGEXP '${match}'`
         ).join(" OR ")
     }) AND
         publication.id = publication_person.publication_id AND
@@ -88,8 +88,8 @@ NODES_AND_EDGES.nodes.forEach(async (node) => {
         recordsForPerson,
         ({ conference }) => conference,
     );
-    const result = INTERESTED_CONFERENCES.map((conference) => {
-        const recordsForConference = groupedByConference[conference];
+    const result = INTERESTED_CONFERENCES.map(([label]) => {
+        const recordsForConference = groupedByConference[label];
         const groupedByYear = recordsForConference
             ? Object.groupBy(
                 recordsForConference,

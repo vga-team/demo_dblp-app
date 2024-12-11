@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import path from "node:path";
-import Database from "better-sqlite3";
+import { openDB } from "../helper/db.js";
 import captureEntities from "../helper/capture-entities";
 import INTERESTED_CONFERENCES from "../config/conferences.json" with {
   type: "json",
@@ -12,14 +12,16 @@ import PUBLICATION_TYPES from "../config/publication-types.json" with {
 const inputXmlPath = path.join(import.meta.dirname, "../data/dblp.xml");
 const outputDbPAth = path.join(import.meta.dirname, "../data/dblp.sqlite3");
 
-const booktitleMatch = new RegExp(INTERESTED_CONFERENCES.join("|"));
+const booktitleMatch = new RegExp(
+  INTERESTED_CONFERENCES.map(([_, match]) => match).join("|"),
+);
 
 const readStream = fs.createReadStream(inputXmlPath);
 
 try {
   fs.unlinkSync(outputDbPAth);
 } catch {}
-const db = new Database(
+const db = openDB(
   outputDbPAth,
   // { verbose: console.log }
 );
