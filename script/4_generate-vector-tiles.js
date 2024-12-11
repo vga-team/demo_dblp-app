@@ -2,6 +2,9 @@ import { spawnSync } from "node:child_process";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 
+const TIMER_LABEL = "Generating the vector tiles";
+console.time(TIMER_LABEL);
+
 const INPUT_PATH = path.join(import.meta.dirname, "../data/graph.geojson");
 const OUTPUT_TILES_DIR_PATH = path.join(import.meta.dirname, "../data/tiles");
 
@@ -41,3 +44,5 @@ await fs.mkdir(OUTPUT_TILES_DIR_PATH, { recursive: true });
 spawnSync("tippecanoe", ["-e", OUTPUT_TILES_DIR_PATH, ...options, INPUT_PATH], {
     stdio: "inherit",
 });
+
+console.timeEnd(TIMER_LABEL);

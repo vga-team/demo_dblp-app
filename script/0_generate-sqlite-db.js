@@ -9,12 +9,17 @@ import PUBLICATION_TYPES from "../config/publication-types.json" with {
   type: "json",
 };
 
+const TIMER_LABEL = "Generating the SQLite DB";
+console.time(TIMER_LABEL);
+
 const inputXmlPath = path.join(import.meta.dirname, "../data/dblp.xml");
 const outputDbPAth = path.join(import.meta.dirname, "../data/dblp.sqlite3");
 
 const booktitleMatch = new RegExp(
   INTERESTED_CONFERENCES.map(([_, match]) => match).join("|"),
 );
+
+let count = 0;
 
 const readStream = fs.createReadStream(inputXmlPath);
 
@@ -94,6 +99,9 @@ try {
       PUBLICATION_TYPES,
     )
   ) {
+    if (count % 10000 === 0) {
+      console.timeLog(TIMER_LABEL, `${count++} XML nodes have been processed`);
+    }
     if (publicationNode == null) {
       continue;
     }
@@ -168,4 +176,5 @@ try {
 }
 
 db.close();
-console.log("Done");
+
+console.timeEnd(TIMER_LABEL);

@@ -12,6 +12,9 @@ import NODES_AND_EDGES from "../data/nodes-and-edges.json" with {
     type: "json",
 };
 
+const TIMER_LABEL = "Generating the time-series";
+console.time(TIMER_LABEL);
+
 const OUTPUT_DIR_PATH = path.join(
     import.meta.dirname,
     "../data/time-series",
@@ -103,3 +106,5 @@ NODES_AND_EDGES.nodes.forEach(async (node) => {
         csvFormatBody(result),
     );
 });
+
+console.timeEnd(TIMER_LABEL);

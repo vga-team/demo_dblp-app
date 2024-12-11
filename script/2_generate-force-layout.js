@@ -15,6 +15,9 @@ import NODES_AND_EDGES from "../data/nodes-and-edges.json" with {
     type: "json",
 };
 
+const TIMER_LABEL = "Generating the force layout";
+console.time(TIMER_LABEL);
+
 const OUTPUT_PATH = path.join(
     import.meta.dirname,
     "../data/nodes-layout.json",
@@ -40,7 +43,9 @@ const simulation = forceSimulation()
     .nodes(personNodes.concat(conferenceNodes))
     .force(
         "person-person",
-        forceLink(NODES_AND_EDGES.edges.concat(conferencePersonLinks)).id((d) => d.id).strength(1),
+        forceLink(NODES_AND_EDGES.edges.concat(conferencePersonLinks)).id((d) =>
+            d.id
+        ).strength(1),
     )
     .force("charge", forceManyBody())
     .force("collide", forceCollide())
@@ -55,3 +60,5 @@ simulation.on("end", async () => {
     const nodes = simulation.nodes();
     await fs.writeFile(OUTPUT_PATH, JSON.stringify(nodes));
 });
+
+console.timeEnd(TIMER_LABEL);

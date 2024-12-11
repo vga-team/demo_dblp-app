@@ -8,6 +8,9 @@ import INTERESTED_YEAR_RANGE from "../config/year-range.json" with {
     type: "json",
 };
 
+const TIMER_LABEL = "Generating nodes and edges";
+console.time(TIMER_LABEL);
+
 const DB_PATH = path.join(import.meta.dirname, "../data/dblp.sqlite3");
 const OUTPUT_DIR_PATH = path.join(import.meta.dirname, "../data");
 
@@ -60,6 +63,8 @@ const nodes = Object.values(_groupedNodes).map((records) => (
     }
 ));
 
+console.timeLog(TIMER_LABEL, "nodes generated");
+
 const _edges = db.prepare(
     /* sql */ `    
     SELECT DISTINCT
@@ -103,8 +108,12 @@ const edges = Object.values(_groupedEdges).map((records) => (
     }
 ));
 
+console.timeLog(TIMER_LABEL, "edges generated");
+
 await fs.mkdir(path.dirname(OUTPUT_DIR_PATH), { recursive: true });
 await fs.writeFile(
     path.join(OUTPUT_DIR_PATH, "nodes-and-edges.json"),
     JSON.stringify({ nodes, edges }),
 );
+
+console.timeEnd(TIMER_LABEL);

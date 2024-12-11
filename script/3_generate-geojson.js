@@ -6,6 +6,9 @@ import NODES_AND_EDGES from "../data/nodes-and-edges.json" with {
     type: "json",
 };
 
+const TIMER_LABEL = "Generating the GeoJSON";
+console.time(TIMER_LABEL);
+
 const GEOJSON_OUTPUT_PATH = path.join(
     import.meta.dirname,
     "../data/graph.geojson",
@@ -74,3 +77,5 @@ await fs.writeFile(
         ),
     }),
 );
+
+console.timeEnd(TIMER_LABEL);
