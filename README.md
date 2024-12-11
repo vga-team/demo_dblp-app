@@ -49,6 +49,15 @@ npm install
 Now, we can run these scripts in the order of their indices. Each subsequent
 script should be run after the previous one is done.
 
+**NOTE: `0_generate-sqlite-db.js` basically extracting information from the XML
+file into a SQLite database to make the data querying in later processing
+easier. However, it can be pretty time-consuming comparing to the later steps.
+If frequently changing the configuration of conferences and year ranges is the
+case, it might be good to run this step with a larger filter with all
+conferences and year range that might be interested later (but do not run it
+without filtering since it could take days). Then, when configuration is changed
+(as a subset of the larger filter), we start from step 1 instead of 0.**
+
 For example, we first run the below command.
 
 ```sh
