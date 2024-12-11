@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import path from "node:path";
 import { openDB } from "../helper/db.js";
-import captureEntities from "../helper/capture-entities";
+import captureEntities from "../helper/capture-entities.js";
 import INTERESTED_CONFERENCES from "../config/conferences.json" with {
   type: "json",
 };
