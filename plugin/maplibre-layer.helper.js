@@ -8,8 +8,8 @@ import {
     Util,
     extend,
     Point,
-  } from "https://esm.run/leaflet";
-  import mapLibre from "https://esm.run/maplibre-gl";
+  } from "https://esm.run/leaflet@^1";
+  import mapLibre from "https://esm.run/maplibre-gl@^4";
   const MaplibreLayer = Layer.extend({
     options: {
       updateInterval: 32,
